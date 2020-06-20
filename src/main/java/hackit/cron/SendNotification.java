@@ -1,6 +1,6 @@
-package cron;
+package hackit.cron;
 
-import bot.YourBot;
+import hackit.bot.TelegramBot;
 import org.quartz.*;
 
 public class SendNotification implements Job {
@@ -8,14 +8,14 @@ public class SendNotification implements Job {
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
 
-        /* Retrieve the bot instance */
+        /* Retrieve the hackit.bot instance */
         SchedulerContext schedulerContext = null;
         try {
             schedulerContext = jobExecutionContext.getScheduler().getContext();
         } catch (SchedulerException e1) {
             e1.printStackTrace();
         }
-        YourBot bot = (YourBot) schedulerContext.get("bot");
+        TelegramBot bot = (TelegramBot) schedulerContext.get("hackit/bot");
 
         bot.sendNotification();
 

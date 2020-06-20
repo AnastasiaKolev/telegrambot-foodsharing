@@ -1,4 +1,4 @@
-package utils.logger;
+package hackit.logger;
 
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
