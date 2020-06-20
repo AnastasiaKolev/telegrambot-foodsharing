@@ -77,11 +77,13 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (incomingText.startsWith(Command.START)) {
 
                 onCommandStart(update);
-                mainKeyboard();
+                SendMessage greetings = getSendMessage(update.getMessage(), "");
+                mainKeyboard(greetings);
 
             } else if (incomingText.contains("Поделиться геолокацией")) {
 
-                locationKeyboard();
+                SendMessage location = getSendMessage(update.getMessage(), "");
+                locationKeyboard(location);
 
             } else if (incomingText.startsWith(Command.HELP)) {
 
@@ -106,11 +108,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (callbackData.startsWith(Callback.FOO)) {
 
                 onCallbackFoo(update);
-
             }
-
         }
-
     }
 
 
@@ -196,7 +195,7 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     //main keyboard
-    private void mainKeyboard() {
+    private void mainKeyboard(SendMessage message) {
         ReplyKeyboardMarkup mainReplyKeyboardMarkup = new ReplyKeyboardMarkup();
         List<KeyboardRow> mainKeyboard = new ArrayList<>();
 
@@ -215,10 +214,17 @@ public class TelegramBot extends TelegramLongPollingBot {
         mainReplyKeyboardMarkup.setKeyboard(mainKeyboard)
                 .setResizeKeyboard(true)
                 .setOneTimeKeyboard(true);
+
+        message.setReplyMarkup(mainReplyKeyboardMarkup);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
     //location keyboard
-    private void locationKeyboard() {
+    private void locationKeyboard(SendMessage message) {
         ReplyKeyboardMarkup locationMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> locationKeyboard = new ArrayList<>();
@@ -232,8 +238,21 @@ public class TelegramBot extends TelegramLongPollingBot {
         locationMarkup.setKeyboard(locationKeyboard)
                 .setOneTimeKeyboard(true)
                 .setResizeKeyboard(true);
+
+        message.setReplyMarkup(locationMarkup);
+        try {
+            execute(message);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        }
     }
 
+    private SendMessage getSendMessage(Message message, String text) {
+        return new SendMessage()
+                .enableMarkdown(true)
+                .setChatId(message.getChatId().toString())
+                .setText(text);
+    }
 
     /* response to plain text */
 

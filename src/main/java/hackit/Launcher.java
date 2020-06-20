@@ -25,14 +25,7 @@ public class Launcher {
         }
         final ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
         @NotNull final TelegramBot bootstrap = context.getBean(TelegramBot.class);
-        try {
-            Class.forName("org.postgresql.Driver");
-            //on classpath
-            System.out.println("on classpath ++++++++++++");
-        } catch(ClassNotFoundException e) {
-            // not on classpath
-            System.out.println("not on classpath ------------");
-        }
+
         /* Schedule tasks not related to updates via Quartz */
         try {
 
