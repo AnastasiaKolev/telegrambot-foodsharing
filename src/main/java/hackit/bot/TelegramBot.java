@@ -69,7 +69,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
             if (user == null) {
                 user = new hackit.model.User(chatId);
-                userService.persist(user);
+                //userService.persist(user);
             }
 
             /* manage commands */
