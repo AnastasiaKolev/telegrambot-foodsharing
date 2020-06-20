@@ -3,6 +3,7 @@ package hackit.service;
 import com.google.gson.Gson;
 import hackit.dto.Item;
 import hackit.dto.PostData;
+import org.jvnet.hk2.annotations.Service;
 
 import javax.annotation.Nullable;
 import java.io.IOException;

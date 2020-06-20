@@ -2,15 +2,11 @@ package hackit.model;
 
 import org.jetbrains.annotations.NotNull;
 
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
 import java.io.Serializable;
 import java.util.UUID;
 
-@MappedSuperclass
 public abstract class AbstractEntity implements Serializable {
 
-    @Id
     @NotNull
     protected String id = UUID.randomUUID().toString();
 

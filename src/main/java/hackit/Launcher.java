@@ -1,15 +1,13 @@
 package hackit;
 
 import hackit.bot.TelegramBot;
-import hackit.configuration.ApplicationConfig;
 import hackit.cron.SendNotification;
 import org.jetbrains.annotations.NotNull;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
+import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class Launcher {
@@ -23,12 +21,9 @@ public class Launcher {
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
-        final ApplicationContext context = new AnnotationConfigApplicationContext(ApplicationConfig.class);
-        @NotNull final TelegramBot bootstrap = context.getBean(TelegramBot.class);
 
         /* Schedule tasks not related to updates via Quartz */
         try {
-
             /* Instantiate the job that will call the hackit.bot function */
             JobDetail jobSendNotification = JobBuilder.newJob(SendNotification.class)
                     .withIdentity("sendNotification")
@@ -52,5 +47,4 @@ public class Launcher {
             e.printStackTrace();
         }
     }
-
 }

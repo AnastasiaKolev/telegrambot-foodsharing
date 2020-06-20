@@ -2,51 +2,94 @@ package hackit.service;
 
 
 import hackit.model.User;
-import hackit.repository.UserRepository;
+import hackit.repository.IUserRepository;
+import hackit.util.MyBatisUtil;
+import org.apache.ibatis.session.SqlSession;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.jvnet.hk2.annotations.Optional;
-import org.jvnet.hk2.annotations.Service;
-
-import javax.transaction.Transactional;
 import java.util.List;
 
-@Service
-@Transactional
 public class UserService {
 
-    private UserRepository userRepository;
-
-    public UserService() {
+    public @Nullable List<User> findAll() throws Exception {
+        @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
+        @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
+        @NotNull final List<User> list = userRepository.findAll();
+        if (list.isEmpty()) return null;
+        return list;
     }
 
-    public List<User> findAllUsers() {
-        return userRepository.findAll();
+    public @Nullable User findById(@Nullable String id) throws Exception {
+        if (id == null || id.isEmpty()) return null;
+        @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
+        @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
+        @Nullable final User user = userRepository.findOneById(id);
+        if (user == null) return null;
+        return user;
     }
 
-    @Optional
-    public User findByChatId(final Long chatId) {
-        if (chatId == null) return null;
-        return userRepository.findByChatId(chatId);
+    @Nullable
+    public final User findByChatId(@Nullable final String login) throws Exception {
+        if (login == null) return null;
+        @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
+        @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
+        @Nullable final User user = userRepository.findByChatId(login);
+        if (user == null) return null;
+        return user;
     }
 
-    public void persist(@Nullable final User user) {
+    public void persist(@Nullable final User user) throws Exception {
         if (user == null) return;
-        userRepository.save(user);
+        @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
+        @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
+        try {
+            userRepository.persist(user);
+            sql.commit();
+        } catch (Exception e) {
+            sql.rollback();
+        } finally {
+            sql.close();
+        }
     }
 
-    public void merge(@Nullable User user) {
+    public void merge(@Nullable User user) throws Exception {
         if (user == null) return;
-        userRepository.save(user);
+        @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
+        @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
+        try {
+            userRepository.merge(user);
+            sql.commit();
+        } catch (Exception e) {
+            sql.rollback();
+        } finally {
+            sql.close();
+        }
     }
 
-    public void remove(@Nullable String id) {
+    public void remove(@Nullable String id) throws Exception {
         if (id == null || id.isEmpty()) return;
-        @NotNull final User user = userRepository.getOne(id);
-        userRepository.delete(user);
+        @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
+        @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
+        try {
+            userRepository.remove(id);
+            sql.commit();
+        } catch (Exception e) {
+            sql.rollback();
+        } finally {
+            sql.close();
+        }
     }
 
-    public void removeAll() {
-        userRepository.deleteAll();
+    public void removeAll() throws Exception {
+        @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
+        @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
+        try {
+            userRepository.removeAll();
+            sql.commit();
+        } catch (Exception e) {
+            sql.rollback();
+        } finally {
+            sql.close();
+        }
     }
 }

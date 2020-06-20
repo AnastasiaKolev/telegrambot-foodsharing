@@ -3,28 +3,26 @@ package hackit.bot;
 import hackit.commons.Callback;
 import hackit.commons.Command;
 import hackit.dto.Item;
+import hackit.logger.Logger;
+import hackit.persistence.PersistenceService;
+import hackit.service.PostService;
 import hackit.service.UserService;
 import org.jetbrains.annotations.Nullable;
-import org.springframework.stereotype.Component;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
-import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
-import hackit.service.PostService;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageReplyMarkup;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import hackit.persistence.PersistenceService;
-import hackit.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
-@Component
 public class TelegramBot extends TelegramLongPollingBot {
 
     /* resource bundles to retrieve configurations and authentications for
@@ -48,9 +46,9 @@ public class TelegramBot extends TelegramLongPollingBot {
         return authBundle.getString("bot-token");
     }
 
-    private PostService postService = new PostService();
+    private final PostService postService = new PostService();
 
-    private UserService userService = new UserService();
+    private final UserService userService = new UserService();
 
     /* basically this is the only method your hackit.bot will call.
      * The design proposed below turns it into a simple switcher, just recognizing
@@ -63,13 +61,20 @@ public class TelegramBot extends TelegramLongPollingBot {
             String incomingText = update.getMessage().getText();
             User sender = update.getMessage().getFrom();
 
-            final long chatId = update.getMessage().getChatId();
+            String chatId = update.getMessage().getChatId().toString();
 
-            @Nullable hackit.model.User user = userService.findByChatId(chatId);
-
-            if (user == null) {
-                user = new hackit.model.User(chatId);
-                //userService.persist(user);
+            @Nullable hackit.model.User user = null;
+            try {
+                user = userService.findByChatId(chatId);
+                if (user == null) {
+                    user = new hackit.model.User(chatId);
+                    user.setUserName(sender.getUserName());
+                    user.setFirstName(sender.getFirstName());
+                    user.setLastName(sender.getLastName());
+                    userService.persist(user);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
             /* manage commands */
@@ -77,13 +82,14 @@ public class TelegramBot extends TelegramLongPollingBot {
             if (incomingText.startsWith(Command.START)) {
 
                 onCommandStart(update);
-                SendMessage greetings = getSendMessage(update.getMessage(), "");
+                SendMessage greetings = getSendMessage(update.getMessage(), "test main");
                 mainKeyboard(greetings);
 
             } else if (incomingText.contains("Поделиться геолокацией")) {
 
-                SendMessage location = getSendMessage(update.getMessage(), "");
+                SendMessage location = getSendMessage(update.getMessage(), "test location");
                 locationKeyboard(location);
+                System.out.println(update.getCallbackQuery().getMessage().getLocation());
 
             } else if (incomingText.startsWith(Command.HELP)) {
 
@@ -134,8 +140,8 @@ public class TelegramBot extends TelegramLongPollingBot {
         try {
             execute(replyMessage);
             int counter = 0;
+            StringBuilder post = new StringBuilder();
             for (Item item : items) {
-                StringBuilder post = new StringBuilder();
                 int itemSize = item.getText().length();
                 if (itemSize < 150) {
                     post
@@ -150,11 +156,11 @@ public class TelegramBot extends TelegramLongPollingBot {
                             .append(item.getText(), 0, 149)
                             .append("\n");
                 }
-                SendMessage postInfo = new SendMessage()
-                        .setChatId(incomingMessage.getChatId())
-                        .setText(post.toString());
-                execute(postInfo);
             }
+            SendMessage postInfo = new SendMessage()
+                    .setChatId(incomingMessage.getChatId())
+                    .setText(post.toString());
+            execute(postInfo);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
