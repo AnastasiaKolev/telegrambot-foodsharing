@@ -114,7 +114,7 @@ public class TelegramBot extends TelegramLongPollingBot {
 
                 mode = Command.NEAREST;
 
-                SendMessage location = sendMessage(update.getMessage(), "Ожидание..");
+                SendMessage location = sendMessage(update.getMessage(), "Поиск ближайщих объявлений в радиусе 3км.");
                 mainKeyboard(location);
 
             } else if (incomingText.contains("Ввести свой город и улицу")) {
