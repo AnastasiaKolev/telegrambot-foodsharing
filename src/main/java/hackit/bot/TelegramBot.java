@@ -384,7 +384,24 @@ public class TelegramBot extends TelegramLongPollingBot {
     }
 
     private void onCommandHelp(Update update) {
-        //TODO: do stuff
+        Message incomingMessage = update.getMessage();
+        User sender = incomingMessage.getFrom();
+
+        LOGGER.log("incoming_update", sender.getId().toString(), "message", "onCommandStart");
+
+        SendMessage help = new SendMessage()
+                .setChatId(incomingMessage.getChatId())
+                .setText("*По количеству объявлений в радиусе 5км*"
+                        + "- Запрашивается количество объявления для выборки близких геолокаций раздачи еды"
+                        + "\n*Последние 5 объявлений* "
+                        + "- Все последние 5 объявлений без привязки к геолокации"
+                        + "\n*Только в радиусе 3км*"
+                        + "- Объявления близкие к указанной локации в Настройках"
+                        + "\n*Настройки геолокации*"
+                        + "- Меню настройки геолокации")
+                .enableMarkdown(true);
+
+        mainKeyboard(help);
     }
 
     /* callback handlers */
