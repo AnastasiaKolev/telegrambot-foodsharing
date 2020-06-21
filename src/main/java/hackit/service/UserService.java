@@ -29,11 +29,11 @@ public class UserService {
     }
 
     @Nullable
-    public final User findByChatId(@Nullable final String login) throws Exception {
-        if (login == null) return null;
+    public final User findByChatId(@Nullable final String chatId) throws Exception {
+        if (chatId == null) return null;
         @NotNull final SqlSession sql = MyBatisUtil.getSqlSessionFactory().openSession();
         @NotNull final IUserRepository userRepository = sql.getMapper(IUserRepository.class);
-        @Nullable final User user = userRepository.findByChatId(login);
+        @Nullable final User user = userRepository.findByChatId(chatId);
         if (user == null) return null;
         return user;
     }

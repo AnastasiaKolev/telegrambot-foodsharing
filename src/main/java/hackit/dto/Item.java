@@ -1,5 +1,4 @@
 package hackit.dto;
-import java.util.List;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -8,9 +7,12 @@ public class Item {
     @SerializedName("text")
     @Expose
     private String text;
-    @SerializedName("additional")
+    @SerializedName("geoDataString")
     @Expose
-    private List<Additional> additional = null;
+    private String geoDataString;
+    @SerializedName("link")
+    @Expose
+    private String link;
 
     public String getText() {
         return text;
@@ -20,12 +22,20 @@ public class Item {
         this.text = text;
     }
 
-    public List<Additional> getAdditional() {
-        return additional;
+    public String getGeoDataString() {
+        return geoDataString;
     }
 
-    public void setAdditional(List<Additional> additional) {
-        this.additional = additional;
+    public void setGeoDataString(String geoDataString) {
+        this.geoDataString = geoDataString;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
 
 }

@@ -23,7 +23,7 @@ public class User extends AbstractEntity {
     public User() {
     }
 
-    public User(@NotNull final String chatId) {
+    public User(@Nullable final String chatId) {
         super();
         this.chatId = chatId;
     }
@@ -40,7 +40,7 @@ public class User extends AbstractEntity {
         return userName;
     }
 
-    public void setUserName(@NotNull final String userName) {
+    public void setUserName(@Nullable final String userName) {
         this.userName = userName;
     }
 
@@ -48,7 +48,7 @@ public class User extends AbstractEntity {
         return firstName;
     }
 
-    public void setFirstName(@NotNull final String firstName) {
+    public void setFirstName(@Nullable final String firstName) {
         this.firstName = firstName;
     }
 
@@ -56,7 +56,7 @@ public class User extends AbstractEntity {
         return lastName;
     }
 
-    public void setLastName(@NotNull final String lastName) {
+    public void setLastName(@Nullable final String lastName) {
         this.lastName = lastName;
     }
 
@@ -64,7 +64,7 @@ public class User extends AbstractEntity {
         return location;
     }
 
-    public void setLocation(@NotNull final String location) {
+    public void setLocation(@Nullable final String location) {
         this.location = location;
     }
 

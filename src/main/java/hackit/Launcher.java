@@ -1,13 +1,13 @@
 package hackit;
 
+import hackit.alerts.AlertsHandler;
 import hackit.bot.TelegramBot;
 import hackit.cron.SendNotification;
-import org.jetbrains.annotations.NotNull;
 import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.telegram.telegrambots.ApiContextInitializer;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 public class Launcher {
@@ -18,6 +18,8 @@ public class Launcher {
         TelegramBot bot = new TelegramBot();
         try {
             botsApi.registerBot(bot);
+
+            startAlerts(bot);
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }
@@ -46,5 +48,19 @@ public class Launcher {
         } catch (SchedulerException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void startAlerts(TelegramBot bot) {
+        AlertsHandler alerts = new AlertsHandler() {
+            @Override
+            public void executeAlert(SendMessage msg) {
+                try {
+                    bot.execute(msg);
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        alerts.startAlertTimers();
     }
 }
